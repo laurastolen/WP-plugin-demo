@@ -21,13 +21,13 @@ function make_post() {
 }
 // hook to inititialization
 add_action('init', 'make_post');
-add_action('init', 'user_ip_address');
+add_action('init', 'get_ip_address');
 
 
 
 // fx to get user's ip address
 function get_ip_address( $atts ) {
-  $body = wp_remote_retrieve_body( wp_remote_get( 'bot.whatismyipaddress.com' ) );
+  $body = wp_remote_retrieve_body( wp_remote_get( 'http://bot.whatismyipaddress.com' ) );
   // echo $body;
   return $body;
 }
@@ -41,11 +41,13 @@ add_shortcode( "ip_address", "get_ip_address" );
 
 // getting stored ip address if present, otherwise find it anew
 $ip_address_to_display = get_transient( 'stored_ip_address' );
+echo $ip_address_to_display;
 if( false === $ip_address_to_display ) {
     // transient has expired, need new data
-    $body = wp_remote_retrieve_body( wp_remote_get( 'bot.whatismyipaddress.com' ) );
+    $ip_address_to_display = wp_remote_retrieve_body( wp_remote_get( 'http://bot.whatismyipaddress.com' ) );
     // set transient to new data
-    set_transient( 'stored_ip_address', $body, 60*60 );
+    set_transient( 'stored_ip_address', $ip_address_to_display, 60*60 );
+    echo $ip_address_to_display;
 }
 
 // now can use $ip_address_to_display on page
